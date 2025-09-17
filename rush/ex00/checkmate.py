@@ -54,7 +54,7 @@ def get_possible_pawn_moves(
     if not is_corner:
         return [(x - 1, y - 1), (x + 1, y - 1)]
 
-    if corner_side in ("tl", "tr"):
+    if y == 0:
         return []
     elif corner_side == "bl":
         return [(x + 1, y - 1)]
