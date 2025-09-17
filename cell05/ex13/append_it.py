@@ -8,7 +8,5 @@ if len(argv) < 2:
     exit(0)
 
 for arg in argv[1:]:
-    if arg.endswith("ism"):
-        print(arg)
-    else:
+    if not arg.endswith("ism"):
         print(f"{arg}ism")
