@@ -71,6 +71,8 @@ def get_possible_rook_moves(
 
     is_corner, corner_side = check_corner(board, size, "R")
 
+    print(is_corner, corner_side)
+
     if not is_corner:
         # if not in corner it can move in horizontal and vertical
         for i in range(size):
@@ -84,9 +86,9 @@ def get_possible_rook_moves(
                 moves.append((i, 0))
                 moves.append((0, i))
         elif corner_side == "tr":  # move down and left
-            for i in range(size - 1):
-                moves.append((i, size - 1))
-                moves.append((size - 1, i))
+            for i in range(size):
+                moves.append((size - 1, i))  # right down
+                moves.append((i, 0))  # top left
         elif corner_side == "bl":  # move up and right
             for i in range(1, size):
                 moves.append((i, size - 1))
@@ -104,23 +106,52 @@ def checkmate(board: str) -> str:
 
     size = check_square_board(board)
 
+    print(board)
+
     if not size:
         return "Fail"
 
     king_pos = get_pos(board, "K")
+    x, y = king_pos
 
-    if not king_pos:
-        return ""
+    print("King pos:", king_pos)
+    # if not king_pos:
+    #     return ""
 
     all_moves = []
 
     if "P" in board:
-        all_moves.extend(get_possible_pawn_moves(get_pos(board, "P")))
+        all_moves.extend(get_possible_pawn_moves(board, get_pos(board, "P"), size))
 
     if "R" in board:
-        all_moves.extend(get_possible_rook_moves(get_pos(board, "R")))
+        moves = get_possible_rook_moves(board, get_pos(board, "R"), size)
+        # convert x, y to 2d matrix array with 0, 1
+
+        for y in range(size):
+            for x in range(size):
+                if (x, y) in moves:
+                    print("X", end="")
+                else:
+                    print(".", end="")
+            print()
+
+        all_moves.extend(moves)
+
+    print(all_moves)
 
     if king_pos in all_moves:
         return "Success"
 
     return "Fail"
+
+
+print(checkmate(
+    """........
+........
+........
+........
+........
+........
+........
+R......K"""
+))
