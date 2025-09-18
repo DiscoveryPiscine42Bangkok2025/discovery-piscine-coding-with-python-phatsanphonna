@@ -7,5 +7,9 @@ def downcase_it(text: str):
     return text.lower()
 
 
-for arg in argv:
+if len(argv) < 2:
+    print("none")
+    exit(0)
+
+for arg in argv[1:]:
     print(downcase_it(arg))
