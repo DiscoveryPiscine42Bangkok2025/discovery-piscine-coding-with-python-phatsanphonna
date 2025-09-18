@@ -72,6 +72,7 @@ def get_possible_rook_moves(
     moves = []
 
     for i in range(size):
+        print(i, x, y)
         if i != x:
             moves.append((i, y))
         if i != y:
@@ -114,8 +115,8 @@ def checkmate(board: str) -> str:
 
     if "R" in board:
         moves = get_possible_rook_moves(board, get_pos(board, "R"), size)
-        # convert x, y to 2d matrix array with 0, 1
-
+        
+        # for debug
         for y in range(size):
             for x in range(size):
                 if (x, y) in moves:
@@ -126,7 +127,7 @@ def checkmate(board: str) -> str:
 
         all_moves.extend(moves)
 
-    print(all_moves)
+    print(all_moves) # for debug
 
     for y in range(size):
         for x in range(size):
