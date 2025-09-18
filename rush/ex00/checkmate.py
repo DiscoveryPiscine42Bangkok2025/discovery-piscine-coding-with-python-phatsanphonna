@@ -72,7 +72,6 @@ def get_possible_rook_moves(
     moves = []
 
     for i in range(size):
-        print(i, x, y)
         if i != x:
             moves.append((i, y))
         if i != y:
@@ -81,65 +80,86 @@ def get_possible_rook_moves(
     return moves
 
 
+def ray(
+    board: str, x0: int, y0: int, dx: int, dy: int, size: int
+) -> list[tuple[int, int]]:
+    """Generate moves in a direction until hitting the first piece or edge"""
+    moves = []
+    x, y = x0, y0
+    while True:
+        x += dx
+        y += dy
+        if not (0 <= x < size and 0 <= y < size):
+            break
+        moves.append((x, y))
+        if board.split("\n")[y][x] != ".":
+            break
+    return moves
+
+
+def get_possible_bishop_moves(
+    board: str, pos: tuple[int, int], size: int
+) -> list[tuple[int, int]]:
+    """Bishop moves diagonally in 4 directions until it hits the first piece and then stops"""
+    x0, y0 = pos
+    moves = []
+    for dx, dy in [(-1, -1), (1, -1), (-1, 1), (1, 1)]:
+        moves.extend(ray(board, x0, y0, dx, dy, size))
+    return moves
+
+
+def get_possible_queen_moves(
+    board: str, pos: tuple[int, int], size: int
+) -> list[tuple[int, int]]:
+    """Queen = Rook + Bishop (8 directions) until hitting the first piece, then stop"""
+    x0, y0 = pos
+    moves = []
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1)]
+    for dx, dy in directions:
+        moves.extend(ray(board, x0, y0, dx, dy, size))
+    return moves
+
+
 def checkmate(board: str) -> str:
     '''Check if KING got checkmate return "Success" if true else "Fail"'''
 
     size = check_square_board(board)
-
-    print(board)
-
     if not size:
         return "Fail"
 
     king_pos = get_pos(board, "K")
-    x, y = king_pos
+    if not king_pos:
+        return "Fail"
 
-    print("King pos:", king_pos)
-    # if not king_pos:
-    #     return ""
-
-    all_moves = []
+    all_moves: list[tuple[int, int]] = []
 
     if "P" in board:
-        moves = get_possible_pawn_moves(board, get_pos(board, "P"), size)
-
-        for y in range(size):
-            for x in range(size):
-                if (x, y) in moves:
-                    print("X", end="")
-                else:
-                    print(".", end="")
-            print()
-
-        all_moves.extend(moves)
+        ppos = get_pos(board, "P")
+        if ppos:
+            all_moves.extend(get_possible_pawn_moves(board, ppos, size))
 
     if "R" in board:
-        moves = get_possible_rook_moves(board, get_pos(board, "R"), size)
-        
-        # for debug
-        for y in range(size):
-            for x in range(size):
-                if (x, y) in moves:
-                    print("X", end="")
-                else:
-                    print(".", end="")
-            print()
+        rpos = get_pos(board, "R")
+        if rpos:
+            all_moves.extend(get_possible_rook_moves(board, rpos, size))
 
-        all_moves.extend(moves)
+    if "B" in board:
+        bpos = get_pos(board, "B")
+        if bpos:
+            all_moves.extend(get_possible_bishop_moves(board, bpos, size))
 
-    print(all_moves) # for debug
+    if "Q" in board:
+        qpos = get_pos(board, "Q")
+        if qpos:
+            all_moves.extend(get_possible_queen_moves(board, qpos, size))
 
-    for y in range(size):
-        for x in range(size):
-            if (x, y) in all_moves:
-                print("X", end="")
-            else:
-                print(".", end="")
-        print()
+    # for debug
+    # for y in range(size):
+    #     for x in range(size):
+    #         if (x, y) in all_moves:
+    #             print("X", end="")
+    #         else:
+    #             print(".", end="")
+    #     print()
 
-    if king_pos in all_moves:
-        return "Success"
-
-    return "Fail"
-
-
+    return "Success" if king_pos in all_moves else "Fail"
