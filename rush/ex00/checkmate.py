@@ -41,6 +41,8 @@ def check_corner(board: str, size: int, char: str) -> tuple[bool, str]:
     elif pos == (size - 1, size - 1):
         return True, "br"
 
+    return False, ""
+
 
 def get_possible_pawn_moves(
     board: str, pos: tuple[int, int], size: int
@@ -69,34 +71,11 @@ def get_possible_rook_moves(
     x, y = pos
     moves = []
 
-    is_corner, corner_side = check_corner(board, size, "R")
-
-    print(is_corner, corner_side)
-
-    if not is_corner:
-        # if not in corner it can move in horizontal and vertical
-        for i in range(size):
-            if i != x:
-                moves.append((i, y))
-            if i != y:
-                moves.append((x, i))
-    else:
-        if corner_side == "tl":  # move down and right
-            for i in range(1, size):
-                moves.append((i, 0))
-                moves.append((0, i))
-        elif corner_side == "tr":  # move down and left
-            for i in range(size):
-                moves.append((size - 1, i))  # right down
-                moves.append((i, 0))  # top left
-        elif corner_side == "bl":  # move up and right
-            for i in range(1, size):
-                moves.append((i, size - 1))
-                moves.append((size - 1, i))
-        elif corner_side == "br":  # move up and left
-            for i in range(size - 1):
-                moves.append((i, 0))
-                moves.append((0, i))
+    for i in range(size):
+        if i != x:
+            moves.append((i, y))
+        if i != y:
+            moves.append((x, i))
 
     return moves
 
@@ -121,7 +100,17 @@ def checkmate(board: str) -> str:
     all_moves = []
 
     if "P" in board:
-        all_moves.extend(get_possible_pawn_moves(board, get_pos(board, "P"), size))
+        moves = get_possible_pawn_moves(board, get_pos(board, "P"), size)
+
+        for y in range(size):
+            for x in range(size):
+                if (x, y) in moves:
+                    print("X", end="")
+                else:
+                    print(".", end="")
+            print()
+
+        all_moves.extend(moves)
 
     if "R" in board:
         moves = get_possible_rook_moves(board, get_pos(board, "R"), size)
@@ -139,19 +128,17 @@ def checkmate(board: str) -> str:
 
     print(all_moves)
 
+    for y in range(size):
+        for x in range(size):
+            if (x, y) in all_moves:
+                print("X", end="")
+            else:
+                print(".", end="")
+        print()
+
     if king_pos in all_moves:
         return "Success"
 
     return "Fail"
 
 
-print(checkmate(
-    """........
-........
-........
-........
-........
-........
-........
-R......K"""
-))
