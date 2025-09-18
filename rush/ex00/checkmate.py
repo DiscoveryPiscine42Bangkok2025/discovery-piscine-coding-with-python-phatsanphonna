@@ -120,6 +120,17 @@ def get_possible_queen_moves(
     return moves
 
 
+def debug_board(moves: list[tuple[int, int]], size: int) -> None:
+    """Print the board with moves marked for debugging"""
+    for y in range(size):
+        for x in range(size):
+            if (x, y) in moves:
+                print("X", end="")
+            else:
+                print(".", end="")
+        print()
+
+
 def checkmate(board: str) -> str:
     '''Check if KING got checkmate return "Success" if true else "Fail"'''
 
@@ -154,12 +165,6 @@ def checkmate(board: str) -> str:
             all_moves.extend(get_possible_queen_moves(board, qpos, size))
 
     # for debug
-    # for y in range(size):
-    #     for x in range(size):
-    #         if (x, y) in all_moves:
-    #             print("X", end="")
-    #         else:
-    #             print(".", end="")
-    #     print()
+    # debug_board(all_moves, size)
 
     return "Success" if king_pos in all_moves else "Fail"
